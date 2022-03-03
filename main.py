@@ -81,7 +81,8 @@ def encrypt_generic(pack):
 
 
 def search_devices():
-    print('Searching for devices using broadcast address: %s' % args.broadcast)
+    broadcast_ip = '255.255.255.255'
+    print('Searching for devices using broadcast address: %s' % broadcast_ip)
 
     s = socket.socket(type=socket.SOCK_DGRAM, proto=socket.IPPROTO_UDP)
     s.settimeout(5)
@@ -89,7 +90,7 @@ def search_devices():
     s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     if hasattr(args, 'socket_interface') and args.socket_interface:
         s.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE, args.socket_interface.encode('ascii'))
-    s.sendto(b'{"t":"scan"}', (args.broadcast, 7000))
+    s.sendto(b'{"t":"scan"}', (broadcast_ip, 7000))
 
     results = []
 
@@ -222,7 +223,6 @@ if __name__ == '__main__':
     parser.add_help = True
     parser.add_argument('command', help='You can use the following commands: search, get, set')
     parser.add_argument('-c', '--client', help='IP address of the client device')
-    parser.add_argument('-b', '--broadcast', help='Broadcast IP address of the network the devices connecting to')
     parser.add_argument('-i', '--id', help='Unique ID of the device')
     parser.add_argument('-k', '--key', help='Unique encryption key of the device')
     parser.add_argument('--verbose', help='Enable verbose logging', action='store_true')
@@ -234,9 +234,6 @@ if __name__ == '__main__':
 
     command = args.command.lower()
     if command == 'search':
-        if args.broadcast is None:
-            print('Error: search command requires a broadcast IP address')
-            exit(1)
         search_devices()
     elif command == 'get':
         if args.params is None or len(args.params) == 0 or args.client is None or args.id is None or args.key is None:
