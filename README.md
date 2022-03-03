@@ -1,4 +1,4 @@
-#Argumente script 
+Argumente script 
 
 ## cautare
 search
